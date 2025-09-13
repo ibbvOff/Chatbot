@@ -1,55 +1,114 @@
-# PDF-chatbot
+# Chat with Your Documents (PDF, PNG, JPG)
 
 ## Introduction
-------------
-The MultiPDF Chat App is a Python application that allows you to chat with multiple PDF documents. You can ask questions about the PDFs using natural language, and the application will provide relevant responses based on the content of the documents. This app utilizes a language model to generate accurate answers to your queries. Please note that the app will only respond to questions related to the loaded PDFs.
+
+-----
+
+**Chat with Your Documents** is a Python application that allows you to have a conversation with your documents, including PDF files and images (PNG, JPG, JPEG). You can ask questions in natural language, and the application will provide relevant answers based on the content of the uploaded files.
+
+A key feature is the ability to choose between two modes of operation:
+
+1.  **A private, local mode** using models that run directly on your computer.
+2.  **A powerful cloud mode** using the Google Gemini API.
+
+The application will only answer questions related to the content of the loaded documents.
 
 ## How It Works
-------------
 
-![MultiPDF Chat App Diagram](./docs/PDF-LangChain.jpg)
+-----
 
-The application follows these steps to provide responses to your questions:
+The application follows these steps to provide answers:
 
-1. PDF Loading: The app reads multiple PDF documents and extracts their text content.
+1.  **Loading and Processing:** The program reads the uploaded files. For PDFs with a text layer, it extracts the text directly. For scanned PDFs and images (PNG, JPG), it uses **Optical Character Recognition (OCR)** technology to convert the image into text.
 
-2. Text Chunking: The extracted text is divided into smaller chunks that can be processed effectively.
+2.  **Text Chunking:** All the extracted text is divided into small, logically related chunks for effective processing.
 
-3. Language Model: The application utilizes a language model to generate vector representations (embeddings) of the text chunks.
+3.  **Embedding Generation:** The application uses a selected embedding model (either the local `instructor-xl` or a cloud-based model from Google) to convert the text chunks into numerical vectors that represent their semantic meaning.
 
-4. Similarity Matching: When you ask a question, the app compares it with the text chunks and identifies the most semantically similar ones.
+4.  **Vector Storage and Retrieval:** The vectors are stored in a local vector database (FAISS). When you ask a question, it is also converted into a vector, and the database quickly finds the most semantically similar chunks from your documents.
 
-5. Response Generation: The selected chunks are passed to the language model, which generates a response based on the relevant content of the PDFs.
+5.  **Response Generation:** The retrieved chunks, along with your original question, are passed to a Large Language Model (either the local **Phi-3** or the cloud-based **Google Gemini**), which then generates a final, coherent answer.
 
-## Dependencies and Installation
-----------------------------
-To install the MultiPDF Chat App, please follow these steps:
+## Installation and Setup
 
-1. Clone the repository to your local machine.
+-----
 
-2. Install the required dependencies by running the following command:
-   ```
-   pip install -r requirements.txt
-   ```
+### 1\. System Dependencies
 
-3. Obtain an API key from OpenAI and add it to the `.env` file in the project directory.
-```commandline
-OPENAI_API_KEY=your_secrit_api_key
-```
+Before installing the Python packages, you need to install system utilities for OCR and PDF processing.
+
+  * **Tesseract-OCR** (for recognizing text from images):
+    *For Debian/Ubuntu:*
+    ```bash
+    sudo apt update
+    sudo apt install tesseract-ocr tesseract-ocr-eng
+    ```
+  * **Poppler** (for handling PDF files as images):
+    *For Debian/Ubuntu:*
+    ```bash
+    sudo apt install poppler-utils
+    ```
+
+### 2\. Python Dependencies
+
+1.  Clone the repository to your local machine.
+
+2.  Create a `requirements.txt` file with the following content:
+
+    ```
+    streamlit
+    python-dotenv
+    PyPDF2
+    langchain
+    langchain-huggingface
+    langchain-google-genai
+    langchain-community
+    faiss-cpu
+    pytesseract
+    pdf2image
+    Pillow
+    ctransformers
+    nest_asyncio
+    ```
+
+3.  Install the dependencies by running the following command:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+### 3\. Model Configuration
+
+You have two options:
+
+  * **To use Google Gemini (Cloud Model):**
+
+    1.  Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+    2.  Create a `.env` file in the root directory of the project.
+    3.  Add your key to the `.env` file in the following format:
+        ```
+        GOOGLE_API_KEY="YOUR_SECRET_API_KEY"
+        ```
+
+  * **To use the Local Model (Phi-3):**
+    No API keys are needed. The models will be downloaded automatically on the first run. **Note:** This may take some time and requires a significant amount of disk space (several gigabytes).
 
 ## Usage
+
 -----
-To use the MultiPDF Chat App, follow these steps:
 
-1. Ensure that you have installed the required dependencies and added the OpenAI API key to the `.env` file.
+1.  Ensure you have installed all system and Python dependencies. If you plan to use Gemini, add your API key to the `.env` file.
 
-2. Run the `main.py` file using the Streamlit CLI. Execute the following command:
-   ```
-   streamlit run app.py
-   ```
+2.  Run the application using Streamlit. Execute the following command in your terminal:
 
-3. The application will launch in your default web browser, displaying the user interface.
+    ```bash
+    streamlit run app.py
+    ```
 
-4. Load multiple PDF documents into the app by following the provided instructions.
+3.  The application will open in your default web browser.
 
-5. Ask questions in natural language about the loaded PDFs using the chat interface.
+4.  In the sidebar, **first select the model provider** ("Google (Gemini)" or "Local (Phi-3)").
+
+5.  Upload your documents (PDF, PNG, JPG, JPEG) and click the **"Process"** button.
+
+6.  Once processing is complete, ask questions in the chat interface to get answers.
