@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# My notes
+Testing_code.ipynb
+test_image.png
 # C extensions
 *.so
 
@@ -81,7 +84,6 @@ profile_default/
 ipython_config.py
 
 # pyenv
-.python-version
 .pdm.toml
 
 # pipenv
