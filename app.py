@@ -1,6 +1,6 @@
 import streamlit as st
 from dotenv import load_dotenv
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
@@ -26,6 +26,7 @@ nest_asyncio.apply()
 # --- Configuration of local models ---
 LOCAL_EMBEDDING_MODEL = "hkunlp/instructor-xl"
 LOCAL_LLM_MODEL = "maziyarpanahi/Phi-3-mini-4k-instruct-gguf"
+MIN_TEXT_LENGTH_FOR_OCR_FALLBACK = 100
 
 # --- OCR: Extracting text from images ---
 def get_text_from_image(image: Image) -> str:
@@ -42,7 +43,7 @@ def get_text_from_pdf(file) -> str:
             extracted_text = page.extract_text()
             if extracted_text:
                 text += extracted_text + "\n"
-        if len(text.strip()) < 100:
+        if len(text.strip()) < MIN_TEXT_LENGTH_FOR_OCR_FALLBACK:
             filename = getattr(file, "name", "PDF-file")
             st.info(f"Little text found in '{filename}'. Starting OCR...")
             text = ""
@@ -160,7 +161,6 @@ def handle_userinput(user_question: str):
     st.session_state.chat_history = st.session_state.store.get("default_session")
     # The response is now located in the 'answer' key
     # bot_response_content = response.get('answer', 'Unfortunately, an error occurred.')
-
 
 # --- Main application function ---
 def main():

@@ -53,23 +53,7 @@ Before installing the Python packages, you need to install system utilities for 
 
 1.  Clone the repository to your local machine.
 
-2.  Create a `requirements.txt` file with the following content:
-
-    ```
-    streamlit
-    python-dotenv
-    PyPDF2
-    langchain
-    langchain-huggingface
-    langchain-google-genai
-    langchain-community
-    faiss-cpu
-    pytesseract
-    pdf2image
-    Pillow
-    ctransformers
-    nest_asyncio
-    ```
+2.  Download the library from the `requirements.txt` file.
 
 3.  Install the dependencies by running the following command:
 
